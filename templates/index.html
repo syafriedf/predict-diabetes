@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Risiko Diabetes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        function validateForm() {
+            const pregnancies = document.getElementById('Pregnancies').value;
+            const glucose = document.getElementById('Glucose').value;
+            const bloodPressure = document.getElementById('BloodPressure').value;
+            const skinThickness = document.getElementById('SkinThickness').value;
+            const insulin = document.getElementById('Insulin').value;
+            const bmi = document.getElementById('BMI').value;
+            const dpf = document.getElementById('DiabetesPedigreeFunction').value;
+            const age = document.getElementById('Age').value;
+    
+            if (pregnancies < 0 || glucose <= 0 || bloodPressure <= 0 || skinThickness < 0 ||
+                insulin < 0 || bmi <= 0 || dpf < 0 || age <= 0) {
+                alert("Harap masukkan nilai yang valid.");
+                return false;
+            }
+            return true;
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+
+        function openModal() {
+            document.getElementById('resultModal').style.display = 'block';
+        }
+
+        window.onload = function() {
+            {% if prediction %}
+                openModal();
+            {% endif %}
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Prediksi Risiko Diabetes</h2>
+        <div class="info">
+            <p><strong>Note:</strong> Aplikasi ini hanya memberikan diagnosis awal. Hasil yang diperoleh perlu dikonfirmasi dengan dokter untuk mendapatkan diagnosis yang lebih akurat.</p>
+        </div>        
+        <form action="/predict" method="post" onsubmit="return validateForm()">
+            <div class="form-group">
+                <label for="Pregnancies">Jumlah Kehamilan:</label>
+                <input type="number" id="Pregnancies" name="Pregnancies" min="0" required>
+                <small>Definisi: Jumlah total kehamilan yang pernah dialami oleh wanita, termasuk kehamilan yang tidak berhasil. | Jika Pria bisa diisi 0</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Glucose">Glukosa (mg/dL):</label>
+                <input type="number" id="Glucose" name="Glucose" step="0.1" required>
+                <small>Definisi: Kadar glukosa plasma 2 jam setelah tes toleransi glukosa oral, diukur dalam miligram per desiliter. <strong>Contoh:</strong> Biasanya kadar glukosa normal adalah 70-99 mg/dL.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="BloodPressure">Tekanan Darah (mm Hg):</label>
+                <input type="number" id="BloodPressure" name="BloodPressure" step="0.1" required>
+                <small>Definisi: Tekanan darah diastolik, diukur dalam milimeter air raksa. <strong>Contoh:</strong> Tekanan darah normal berkisar antara 90-120 mm Hg.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="SkinThickness">Ketebalan Kulit (mm):</label>
+                <input type="number" id="SkinThickness" name="SkinThickness" step="0.1" required>
+                <small>Definisi: Ketebalan lipatan kulit triceps, diukur dalam milimeter, digunakan sebagai indikator lemak tubuh. <strong>Contoh:</strong> Normalnya sekitar 10-50 mm tergantung pada tingkat lemak tubuh</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Insulin">Insulin (mu U/ml):</label>
+                <input type="number" id="Insulin" name="Insulin" step="0.1" required>
+                <small>Definisi: Jumlah insulin dalam darah setelah 2 jam melakukan tes toleransi glukosa. Insulin membantu tubuh memproses gula. <strong>Contoh:</strong> Kisaran normal biasanya 2-25 mu U/ml.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="BMI">Indeks Massa Tubuh/BMI (kg/m²):</label>
+                <input type="number" id="BMI" name="BMI" step="0.1" required>
+                <small>Definisi: Indeks massa tubuh, dihitung sebagai berat badan (kg) dibagi kuadrat tinggi badan (m²). <strong>Contoh:</strong> Nilai BMI 18,5-24,9 dianggap sebagai berat badan normal.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="DiabetesPedigreeFunction">Fungsi Pedigree Diabetes:</label>
+                <input type="number" id="DiabetesPedigreeFunction" name="DiabetesPedigreeFunction" step="0.001" required>
+                <small>Definisi: Pengukuran seberapa besar risiko diabetes berdasarkan riwayat keluarga. Semakin tinggi angkanya, semakin besar risiko diabetes. <strong>Contoh:</strong> Nilai antara 0.0 dan 2.5, dengan nilai lebih tinggi berarti risiko lebih tinggi.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Age">Usia (tahun):</label>
+                <input type="number" id="Age" name="Age" min="0" required>
+                <small>Definisi: Usia pengguna dalam tahun.</small>
+            </div>
+
+            <button type="submit">Prediksi</button>
+        </form>
+
+        <!-- Modal Pop-Up for Results -->
+        <div id="resultModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="window.location.href='/'">&times;</span>
+                <h2>Hasil Prediksi</h2>
+                <div class="result">
+                    <p>{{ prediction|safe }}</p>
+                </div>
+                <!-- <canvas id="resultChart"></canvas> -->
+                {% if recommendation %}
+                    <div class="recommendation">
+                        <p>{{ recommendation }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if prediction %}
+            <script>
+                const ctx = document.getElementById('resultChart').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Risiko Tinggi', 'Risiko Rendah'],
+                        datasets: [{
+                            label: 'Risiko Diabetes',
+                            data: [{{ probability }}, {{ 100 - probability }}],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)',
+                                'rgba(54, 162, 235, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            </script>
+        {% endif %}
+
+        <!-- {% if recommendation %}
+            <div class="recommendation">
+                <p>{{ recommendation }}</p>
+            </div>
+        {% endif %}
+
+        {% if prediction %}
+            <div class="back-button">
+                <button type="button" onclick="window.location.href='/'" class="button">Prediksi Ulang</button>
+            </div>
+        {% endif %} -->
+    </div>
+</body>
+</html>
