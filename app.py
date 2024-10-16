@@ -51,5 +51,6 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Vercel serverless function requires this
+def handler(event, context):
+    return app(event, context)
