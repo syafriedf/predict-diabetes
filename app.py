@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, render_template
 import pickle
-import numpy as np
 
 app = Flask(__name__)
 
@@ -28,9 +27,8 @@ def predict():
         dpf = float(data['DiabetesPedigreeFunction'])
         age = int(data['Age'])
 
-        # Membuat array fitur
-        features = np.array([[pregnancies, glucose, blood_pressure, skin_thickness,
-                              insulin, bmi, dpf, age]])
+        # Membuat list fitur
+        features = [[pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, dpf, age]]
 
         # Melakukan prediksi
         prediction = model.predict(features)
@@ -45,7 +43,6 @@ def predict():
             result = f"Anda <span class='green-text'>berisiko rendah</span> terkena diabetes dengan probabilitas {probability*100:.2f}%."
             prob = probability * 100
             recommendation = "Terus jaga gaya hidup sehat dengan pola makan seimbang dan rutin berolahraga."
-
 
         return render_template('index.html', prediction=result, probability=prob, recommendation=recommendation)
     except Exception as e:
