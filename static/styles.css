@@ -184,18 +184,25 @@ button.button:hover {
     font-weight: bold;
 }
 
-/* Modal styling and other styles remain unchanged */
-
-
-
-/* #resultChart {
-    width: 300px;
-    height: 300px;
-    margin: 0 auto;
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 20px;
 }
 
-canvas {
-    display: block;
-    margin: 20px auto; /* Added margin to separate from other content
-} */
+.info strong {
+    color: #f44336;
+}
+
+.info-icon {
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: 0;
+    cursor: pointer;
+    display: inline-block;
+    float: right;
+}
 
