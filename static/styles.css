@@ -1,17 +1,20 @@
 /* Container */
 body {
     background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
 }
-
 
 .container {
     background-color: white;
-    padding: 30px;
+    padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 500px;
-    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto;
     font-family: Arial, sans-serif;
+    flex-grow: 1;
 }
 
 /* Title */
@@ -84,7 +87,7 @@ button[type="submit"]:hover {
 }
 
 .result p {
-    font-size: 26px;
+    font-size: 24px;
     color: #333;
 }
 
@@ -138,12 +141,10 @@ button.button:hover {
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 90%;
     max-width: 500px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    padding-top: 30px; /* Added padding */
-    padding-bottom: 30px; /* Added padding */
 }
 
 .close {
@@ -171,8 +172,6 @@ button.button:hover {
     margin-bottom: 20px;
 }
 
-
-/* Styling for risk results */
 /* Text styling for risk results */
 .red-text {
     color: red;
@@ -190,10 +189,6 @@ footer {
     margin-top: 20px;
 }
 
-.info strong {
-    color: #f44336;
-}
-
 .info-icon {
     font-size: 24px;
     color: #333;
@@ -201,8 +196,68 @@ footer {
     display: inline-block;
     margin-left: auto;
     margin-right: 0;
-    cursor: pointer;
-    display: inline-block;
     float: right;
 }
 
+/* Media Queries */
+@media (max-width: 768px) {
+    .container {
+        width: 70%;
+        padding: 30px;
+    }
+    
+    h2 {
+        font-size: 20px;
+    }
+    
+    .result p {
+        font-size: 20px;
+    }
+    
+    input[type="number"],
+    button[type="submit"] {
+        font-size: 14px;
+        padding: 8px;
+    }
+    
+    button.button {
+        font-size: 14px;
+    }
+    /* Footer */
+    footer {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 80%;
+        padding: 25px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+    
+    .result p {
+        font-size: 18px;
+    }
+    
+    input[type="number"],
+    button[type="submit"] {
+        font-size: 12px;
+        padding: 6px;
+    }
+    
+    button.button {
+        font-size: 12px;
+    }
+
+    .info-icon {
+        font-size: 20px;
+    }
+
+    footer {
+        font-size: 10px;
+    }
+}
