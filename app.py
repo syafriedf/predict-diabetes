@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, render_template
 import xgboost as xgb
-import pandas as pd
 
 app = Flask(__name__)
 
@@ -8,8 +7,9 @@ app = Flask(__name__)
 model = xgb.XGBClassifier()
 model.load_model('model/diabetes_model.json')
 
-model_columns = pd.read_csv('model/diabetes_columns.csv').squeeze().tolist()
-
+# Definisikan kolom model yang sesuai
+model_columns = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness',
+                 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
 
 @app.route('/')
 def home():
@@ -31,24 +31,18 @@ def predict():
         dpf = float(data['DiabetesPedigreeFunction'])
         age = int(data['Age'])
 
-        # Membuat DataFrame dengan input user
-        input_data = pd.DataFrame([{
-            'Pregnancies': pregnancies,
-            'Glucose': glucose,
-            'BloodPressure': blood_pressure,
-            'SkinThickness': skin_thickness,
-            'Insulin': insulin,
-            'BMI': bmi,
-            'DiabetesPedigreeFunction': dpf,
-            'Age': age
-        }])
+        # Membuat list dengan input user dalam urutan yang sesuai dengan model
+        input_data = [
+            pregnancies, glucose, blood_pressure, skin_thickness,
+            insulin, bmi, dpf, age
+        ]
 
-        # Memastikan kolom input sesuai dengan yang digunakan saat pelatihan
-        input_data = input_data.reindex(columns=model_columns, fill_value=0)
+        # Mengubah input menjadi array 2D karena XGBoost memerlukan array 2D
+        input_data_2d = [input_data]
 
         # Melakukan prediksi
-        prediction = model.predict(input_data)
-        probability = model.predict_proba(input_data)[0][1]
+        prediction = model.predict(input_data_2d)
+        probability = model.predict_proba(input_data_2d)[0][1]
 
         # Menentukan hasil dan rekomendasi
         if prediction[0] == 1:
@@ -64,5 +58,5 @@ def predict():
         return jsonify({'error': str(e)})
 
 # Vercel serverless function requires this
-if __name__ == '__main__':
-    app.run(debug=True)
+def handler(event, context):
+    return app(event, context
