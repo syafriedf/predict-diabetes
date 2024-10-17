@@ -1,14 +1,14 @@
 {
-    "build": {
-      "env": {
-        "FLASK_ENV": "development"
-      }
-    },
-    "routes": [
+  "builds": [
       {
-        "src": "/(.*)",
-        "dest": "/app.py"
+          "src": "app.py",
+          "use": "@vercel/python"
       }
-    ]
-  }
-  
+  ],
+  "routes": [
+      {
+          "src": "/(.*)",
+          "dest": "app.py"
+      }
+  ]
+}
