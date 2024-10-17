@@ -52,8 +52,5 @@ def predict():
         return jsonify({'error': str(e)})
 
 # Vercel serverless function requires this
-if __name__ == "__main__": 
-    app.run()
-
-# Source: Genelify.com | How to Deploy a Python or Flask App to Vercel For Free - Genelify.
-# https://www.genelify.com/blog/deploy-a-python-flask-app-to-vercel
+def handler(event, context):
+    return app(event, context)
